@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Code List</title>
+</head>
+<body>
+<h1>Projects</h1>
+<table border="1">
+    <tr>
+        <th>Project ID</th>
+        <th>Project Name</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="project : ${projects}">
+        <td th:text="${project.id}">1</td>
+        <td th:text="${project.name}">Sample Project</td>
+        <td>
+            <form th:action="@{/compileProject}" method="post" style="display:inline;">
+                <input type="hidden" name="projectId" th:value="${project.id}"/>
+                <button type="submit">Compile</button>
+            </form>
+            <form th:action="@{/deleteProject}" method="post" style="display:inline;">
+                <input type="hidden" name="projectId" th:value="${project.id}"/>
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<h1>Project Files</h1>
+<table border="1" th:each="project : ${projects}">
+    <tr>
+        <th colspan="4" th:text="'Project: ' + ${project.name}">Project: Sample Project</th>
+    </tr>
+    <tr>
+        <th>File ID</th>
+        <th>File Name</th>
+        <th>Actions</th>
+    </tr>
+    <tr th:each="file : ${project.codeFiles}">
+        <td th:text="${file.id}">1</td>
+        <td th:text="${file.fileName}">Sample.java</td>
+        <td>
+            <form th:action="@{/deleteCodeFile}" method="post" style="display:inline;">
+                <input type="hidden" name="fileId" th:value="${file.id}"/>
+                <button type="submit">Delete</button>
+            </form>
+            <form th:action="@{/downloadCodeFile}" method="post" style="display:inline;">
+                <input type="hidden" name="fileId" th:value="${file.id}"/>
+                <button type="submit">Download</button>
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

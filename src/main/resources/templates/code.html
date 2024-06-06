@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Code Form</title>
+</head>
+<body>
+<h1>Submit Code</h1>
+<form action="#" th:action="@{/submitProject}" method="post">
+    <input type="text" name="projectName" placeholder="Project Name" required/>
+    <button type="submit">Create Project</button>
+</form>
+<br>
+<form action="#" th:action="@{/submitCode}" method="post">
+    <select name="projectId" required>
+        <option th:each="project : ${projects}" th:value="${project.id}" th:text="${project.name}"></option>
+    </select>
+    <input type="text" name="fileName" placeholder="File Name" required/>
+    <textarea name="content" placeholder="Code content" required></textarea>
+    <button type="submit">Submit Code</button>
+</form>
+<br>
+<form action="#" th:action="@{/uploadCodeFile}" method="post" enctype="multipart/form-data">
+    <select name="projectId" required>
+        <option th:each="project : ${projects}" th:value="${project.id}" th:text="${project.name}"></option>
+    </select>
+    <input type="file" name="file" required/>
+    <button type="submit">Upload File</button>
+</form>
+<br>
+<a href="/codeList">View Projects and Files</a>
+</body>
+</html>
