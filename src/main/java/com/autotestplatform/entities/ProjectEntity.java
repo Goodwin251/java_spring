@@ -12,10 +12,13 @@ public class ProjectEntity {
 
     private String name;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    private String userId; // Додано поле для збереження ідентифікатора користувача
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CodeFileEntity> codeFiles;
 
-    // Getters and setters
+    // Гетери і сетери
+
     public Long getId() {
         return id;
     }
@@ -30,6 +33,14 @@ public class ProjectEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public List<CodeFileEntity> getCodeFiles() {

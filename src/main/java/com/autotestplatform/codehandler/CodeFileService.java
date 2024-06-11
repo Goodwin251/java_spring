@@ -3,17 +3,16 @@ package com.autotestplatform.codehandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.autotestplatform.entities.CodeFileEntity;
-import com.autotestplatform.entities.ProjectEntity;
-import com.autotestplatform.repos.FileRepository;
-import com.autotestplatform.repos.ProjectRepository;
-
 import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+//import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.autotestplatform.entities.*;
+import com.autotestplatform.repos.*;
 
 @Service
 public class CodeFileService {
@@ -26,6 +25,7 @@ public class CodeFileService {
 
     public void saveCodeFile(CodeFileEntity codeFile) {
         fileRepository.save(codeFile);
+        saveFileToSystem(codeFile);
     }
 
     public void saveProject(ProjectEntity project) {
@@ -38,6 +38,18 @@ public class CodeFileService {
 
     public List<ProjectEntity> getAllProjects() {
         return projectRepository.findAll();
+    }
+
+    public List<ProjectEntity> getProjectsByUserId(String userId) {
+        return projectRepository.findByUserId(userId);
+    }
+
+    public ProjectEntity getProjectByIdAndUserId(Long projectId, String userId) {
+        return projectRepository.findByIdAndUserId(projectId, userId).orElse(null);
+    }
+
+    public CodeFileEntity getCodeFileByIdAndUserId(Long fileId, String userId) {
+        return fileRepository.findByIdAndProject_UserId(fileId, userId).orElse(null);
     }
 
     public void deleteCodeFile(Long fileId) throws IOException {
@@ -73,7 +85,7 @@ public class CodeFileService {
 
     public String compileProject(Long projectId) throws IOException, InterruptedException {
         ProjectEntity project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
-        
+
         // Create a directory for the project
         Path projectDir = Paths.get("compiled", project.getName()).toAbsolutePath();
         if (Files.exists(projectDir)) {
@@ -163,6 +175,19 @@ public class CodeFileService {
         return compileOutput.toString();
     }
 
+    private void saveFileToSystem(CodeFileEntity codeFile) {
+        try {
+            Path projectDir = Paths.get("compiled", codeFile.getProject().getName()).toAbsolutePath();
+            if (!Files.exists(projectDir)) {
+                Files.createDirectories(projectDir);
+            }
+            Path filePath = projectDir.resolve(codeFile.getFileName());
+            Files.write(filePath, codeFile.getContent().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private String getClassNameFromFile(Path javaFilePath) throws IOException {
         BufferedReader reader = Files.newBufferedReader(javaFilePath);
         String line;
@@ -178,10 +203,12 @@ public class CodeFileService {
                     }
                 }
                 if (classIndex != -1 && classIndex < tokens.length - 1) {
+                	reader.close();
                     return tokens[classIndex + 1];
                 }
             }
         }
+        reader.close();
         return javaFilePath.getFileName().toString().replace(".java", "");
     }
 
@@ -191,9 +218,11 @@ public class CodeFileService {
         while ((line = reader.readLine()) != null) {
             line = line.trim();
             if (line.contains("public static void main(String[] args)")) {
-                return true;
+                reader.close();
+            	return true;
             }
         }
+        reader.close();
         return false;
     }
 
