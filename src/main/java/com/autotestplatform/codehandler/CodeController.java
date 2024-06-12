@@ -25,7 +25,12 @@ public class CodeController {
 
     @Autowired
     private CodeFileService codeFileService;
-
+    @Operation(summary = "Redirect to login")
+    @GetMapping("/")
+    public String redirectToCode() {
+        return "redirect:/code";
+    }
+    
     @Operation(summary = "View the code form")
     @GetMapping("/code")
     public String codeForm(Model model, @AuthenticationPrincipal OidcUser principal) {

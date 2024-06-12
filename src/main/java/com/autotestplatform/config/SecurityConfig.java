@@ -17,9 +17,9 @@ import org.springframework.beans.factory.annotation.Value;
 public class SecurityConfig {
 
 	//Oath secrets
- 	@Value("${google.client.id}")
+ 	@Value("${spring.security.oauth2.client.registration.google.client-id}")
 	private String clientId;
- 	@Value("${google.client.secret}")
+ 	@Value("${spring.security.oauth2.client.registration.google.client-secret}")
  	private String clientSecret;
 	
     private final CustomAuthenticationSuccessHandler successHandler;
