@@ -1,7 +1,11 @@
 package com.autotestplatform.codehandler;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,16 +17,37 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
 
 import com.autotestplatform.entities.CodeFileEntity;
 import com.autotestplatform.entities.ProjectEntity;
 import com.autotestplatform.repos.FileRepository;
 import com.autotestplatform.repos.ProjectRepository;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class CodeFileServiceTest {
-//
-//    @Mock
+	
+	@Autowired	
+	private CodeFileService codeFileService;
+
+	@Autowired
+	private MockMvc mockMvc;
+	
+	@Test
+	void contextLoads() throws Exception {
+		assertThat(codeFileService).isNotNull();	
+	}
+	
+	@Test
+	void shouldReroute() throws Exception{
+		this.mockMvc.perform(get("/")).andDo(print()).andExpect(status().is3xxRedirection());
+	}
+
+	//    @Mock
 //    private FileRepository fileRepository;
 //
 //    @Mock
